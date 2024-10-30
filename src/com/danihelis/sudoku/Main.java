@@ -7,7 +7,6 @@ public class Main {
 
     public static void main(String... args) {
         try {
-            System.out.printf("Hello world!\n");
             /*/ Layout.Model model = Layout.Model.MONOLOTUS;
             long time = System.currentTimeMillis();
             Layout layout = Layout.createRandomLayout();
@@ -17,7 +16,7 @@ public class Main {
             System.out.printf("TIME: %d.%03ds\n",
                     ellapsed / 1000, ellapsed % 1000);
 
-            /* /
+            /*/
 
             String puzzle =
             // ".4.37...89....6.3.6....94.2.7..9...1..34.2.6....81.....2.1.8..6.......1.........9";
@@ -32,7 +31,8 @@ public class Main {
 
             // Board board = Board.parse(Type.ODD_EVEN, puzzle, cells);
             Board board = Board.parse(Type.CLASSIC, puzzle);
-            board.print(false);
+            board.print(System.out, false);
+            /*
 
             long time = System.currentTimeMillis();
             Solver solver = new Solver(board);

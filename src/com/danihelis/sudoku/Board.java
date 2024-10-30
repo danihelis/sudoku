@@ -1,5 +1,6 @@
 package com.danihelis.sudoku;
 
+import java.io.*;
 import java.util.*;
 
 public class Board {
@@ -184,100 +185,84 @@ public class Board {
         return Arrays.copyOf(list, size);
     }
 
-    /*
-    void print(boolean showCandidates) {
-        boolean showParity = parityCells != null;
-        int index = 0;
-        System.out.println("\u0010");
-        if (showParity)
-            System.out.printf("Parity Determined: %s\n",
-                    parity == PARITY_UNKNOWN ? "UNKNOWN" :
-                    parity == PARITY_EVEN ? "EVEN" : "ODD");
-        for (int row = 0; row <= DIM; row++, index += DIM) {
-            for (int col = 0; col < DIM; col++) {
-                System.out.print("\u253c");
-                boolean div = row == 0 || row == 9 ||
-                    getRegionFromPosition(Region.GRID, row * DIM + col) !=
-                    getRegionFromPosition(Region.GRID, (row - 1) * DIM + col);
-                for (int k = 0; k < 7; k++)
-                    System.out.printf(div ? "\u2012" : k % 2 == 1 ? "·" : " ");
-            }
-            if (showParity) {
-                System.out.print("\u253c  ");
-                for (int col = 0; col < DIM; col++) {
-                    System.out.print("\u253c");
-                    boolean div = row == 0 || row == 9 ||
-                        getRegionFromPosition(Region.GRID, row * DIM + col) !=
-                        getRegionFromPosition(Region.GRID, (row - 1) * DIM + col);
-                    for (int k = 0; k < 7; k++)
-                        System.out.printf(div ? "\u2012" : k % 2 == 1 ? "·" : " ");
+    int getRank(int row, int col) {
+        int pos = intoPosition(row % dimension, col % dimension);
+        return layout.location[pos].rank;
+    }
+
+    void print(OutputStream stream, boolean showCandidates) {
+        var output = new PrintStream(stream);
+        int position = 0;
+        for (int row = 0; row <= dimension; row++, position += dimension) {
+            for (int col = 0; col <= dimension; col++) {
+                boolean rowDivision = row == 0 || row == dimension ||
+                        getRank(row, col) != getRank(row - 1, col);
+                boolean colDivision = col == 0 || col == dimension ||
+                        getRank(row, col) != getRank(row, col - 1);
+                if (row == 0) {
+                    output.print(col == 0 ? "┏" : col == dimension ? "┓"
+                            : colDivision ? "┳" : "┯");
+                } else if (row == dimension) {
+                    output.print(col == 0 ? "┗": col == dimension ? "┛"
+                            : colDivision ? "┻" : "┷");
+                } else {
+                    output.print(col == 0 ? (colDivision ? "┣": "┠")
+                            : col == dimension ? (colDivision ? "┫" : "┨")
+                            : colDivision && rowDivision ? "╋"
+                            : colDivision ? "╂" : rowDivision ? "┿" : "┼");
+                }
+                if (col == dimension) break;
+                for (int i = 0; i < 2 * columns + 1; i++) {
+                    output.print(rowDivision ? "━" : i % 2 == 1 ? "─" : "─");
                 }
             }
-            System.out.println("\u253c");
-            for (int line = 0; row < DIM && line < 3; line++)
-                for (int col = 0; col <= DIM; col++) {
-                    boolean div = col == 0 || col == 9 ||
-                        getRegionFromPosition(Region.GRID, row * DIM + col) !=
-                        getRegionFromPosition(Region.GRID, row * DIM + col - 1);
-                    System.out.printf(div ? "\u2502" : "·");
-                    if (col == DIM) {
-                        if (showParity) {
-                            System.out.print("  ");
-                            for (col = 0; col < DIM; col++) {
-                                div = col == 0 || col == 9 ||
-                                    getRegionFromPosition(Region.GRID, row * DIM + col) !=
-                                    getRegionFromPosition(Region.GRID, row * DIM + col - 1);
-                                System.out.printf(div ? "\u2502" : "·");
-                                int position = index + col;
-                                System.out.printf(
-                                    parityCells.contains(index + col) ?
-                                        " # # # " : "       ");
-                            }
-                            System.out.print("\u2502");
+            output.println();
+            if (row == dimension) break;
+            for (int line = 0; line < rows; line++) {
+                for (int col = 0; col <= dimension; col++) {
+                    boolean div = col == 0 || col == dimension ||
+                            getRank(row, col) != getRank(row, col -1);
+                    System.out.printf(div ? "┃" : "│");
+                    if (col == dimension) break;
+                    var pos = intoPosition(row, col);
+                    int value = showCandidates ? solution[pos] : given[pos];
+                    for (int i = 0; i < columns; i++) {
+                        output.printf(" ");
+                        if (value != 0) {
+                            output.printf(line == rows / 2 && i == columns / 2
+                                    ? "%d".formatted(value) : " ");
+                        } else {
+                            int bit = 1 << (line * columns + i);
+                            boolean unknown = (candidate[pos] & bit) == 0;
+                            output.printf(unknown ? "." :
+                                   "%d".formatted(line * columns + i + 1));
                         }
-                        System.out.println();
-                        break;
                     }
-                    int i = index + col;
-                    int value = showCandidates ? solution[i] : puzzle[i];
-                    if (value != 0)
-                        System.out.printf(line == 1 ?
-                                String.format("   %d   ", value) :
-                                "       ");
-                    else if (!showCandidates)
-                        System.out.printf("       ");
-                    else {
-                        int mask = candidate[i];
-                        for (int k = 0; k < 3; k++) {
-                            int bit = 1 << (line * 3 + k);
-                            if ((mask & bit) != 0)
-                                System.out.printf(" %d", line * 3 + k + 1);
-                            else
-                                System.out.printf(" .");
-                        }
-                        System.out.printf(" ");
-                    }
+                    output.printf(" ");
                 }
+                output.println();
+            }
         }
     }
 
     String export() {
         String output = "";
-        for (int position = 0; position < SIZE; position++)
-            output += puzzle[position] == 0 ? "." : puzzle[position];
+        for (int pos = 0; pos < positions; pos++) {
+            output += given[pos] == 0 ? "." : given[pos];
+        }
         return output;
     }
 
     static Board parse(Type type, String sequence) {
-        Board board = new Board(type);
-        for (int index = 0; index < SIZE; index++) {
-            char given = sequence.charAt(index);
-            board.puzzle[index] = given >= '1' && given <= '9' ?
-                    given - '0' : 0;
+        var board = new Board(type);
+        for (int pos = 0; pos < board.positions; pos++) {
+            var given = sequence.charAt(pos);
+            board.given[pos] = given >= '1' && given <= '9' ? given - '0' : 0;
         }
         return board;
     }
 
+    /*
     static Board parse(Type type, String sequence, String cells) {
         Board board = parse(type, sequence);
         Vector<Integer> parityCells = new Vector<>();
