@@ -3,10 +3,10 @@ package com.danihelis.sudoku;
 import java.util.*;
 
 public enum Type {
-    CLASSIC("CLASSIC"),
-    DIAGONAL("DIAGONAL"),
-    IRREGULAR("IRREGULAR"),
-    ODD_EVEN("ODD-EVEN");
+    CLASSIC("Classic"),
+    DIAGONAL("Diagonal"),
+    IRREGULAR("Irregular"),
+    ODD_EVEN("Odd-even");
 
     String name;
 
