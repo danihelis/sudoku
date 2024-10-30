@@ -10,15 +10,16 @@ public class Board {
     int dimension;          // number of different values in a box
     int positions;          // number of values in the whole board
     int regions;            // number of regions {ROW, COLUMN, GROUP, DIAGONAL?}
-    int given[];            // value of a given in position (0 if none)
-    int solution[];         // solution in position (0 if unknown)
-    int candidate[];        // bit mask with candidates in position
-    int possible[];         // number of possible candidates in position
+    int[] given;            // value of a given in position (0 if none)
+    int[] solution;         // solution in position (0 if unknown)
+    int[] candidate;        // bit mask with candidates in position
+    int[] possible;         // number of possible candidates in position
 
+    Layout layout;
+    Type type;
     Symmetry symmetry;
     Difficulty difficulty;
-    Type type;
-    Layout layout;
+    boolean boring;
 
     Board(Board board) {
         restore(board);
@@ -38,7 +39,7 @@ public class Board {
         solution = new int[positions];
         candidate = new int[positions];
         possible = new int[positions];
-        regions = 3; // TODO 4 if DIAGONAL
+        regions = type == Type.DIAGONAL ? 4 : 3;
         difficulty = null;
         symmetry = null;
         layout = Layout.createRegularLayout(this);
@@ -89,6 +90,10 @@ public class Board {
             case Location.GROUP -> layout.location[position];
             default -> throw new Error("Invalid region: " + region);
         };
+    }
+
+    int ranks(int region) {
+        return region == Location.DIAGONAL ? 2 : dimension;
     }
 
     void restore(Board board) {
