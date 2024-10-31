@@ -225,11 +225,12 @@ public class Solver {
                 for (int index = 0; index < board.dimension; index++) {
                     int pos = board.intoPosition(area, areaRank, index);
                     var loc = board.intoLocation(region, pos);
-                    if (region == Location.DIAGONAL &&
-                            loc.rank == Location.BOTH_DIAGONALS) {
-                        loc.rank = rank;
+                    if (loc != null && (loc.rank == rank ||
+                            (region == Location.DIAGONAL &&
+                                loc.rank == Location.BOTH_DIAGONALS))) {
+                        continue;
                     }
-                    if ((board.candidate[pos] & bit) != 0 && loc.rank != rank) {
+                    if ((board.candidate[pos] & bit) != 0) {
                         board.removeCandidates(pos, bit);
                         modified = true;
                     }
@@ -390,11 +391,14 @@ public class Solver {
         long time = System.currentTimeMillis();
         boolean solved = solve(true, true);
         long ellapsed = System.currentTimeMillis() - time;
-        for (int k = 0; k < 80; k++) stream.printf("=");
-        stream.println();
         board.print(stream, true);
-        stream.printf("\nSOLVED: %b\nUNIQUE: %b\nGUESSES: %d\nTIME: %d.%03d\n",
-                solutions > 0, solutions == 1, guesses,
-                ellapsed / 1000, ellapsed % 1000);
+        stream.println();
+        stream.printf("""
+                SOLVED: %b
+                UNIQUE: %b
+                GUESSES: %d
+                TIME TO FINISH SOLVING: %d.%03d
+                """, solutions > 0, solutions == 1, guesses, ellapsed / 1000,
+                ellapsed % 1000);
     }
 }

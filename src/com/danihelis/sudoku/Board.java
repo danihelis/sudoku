@@ -62,8 +62,8 @@ public class Board {
             case Location.ROW -> rank * dimension + index;
             case Location.COLUMN -> index * dimension + rank;
             case Location.GROUP -> layout.position[rank][index];
-            case Location.DIAGONAL -> (rank == Location.DIAGONAL_1 ? index
-                    : dimension - index - 1) * dimension + index;
+            case Location.DIAGONAL -> index * dimension + (
+                    rank == Location.DIAGONAL_1 ? index : dimension - index - 1);
             default -> throw new Error("Invalid region: " + region);
         };
     }
@@ -181,7 +181,7 @@ public class Board {
     }
 
     int[] getPositionsWithCandidate(int region, int rank, int bit) {
-        int list[] = new int[dimension];
+        int[] list = new int[dimension];
         int size = 0;
         for (int index = 0; index < dimension; index++) {
             int pos = intoPosition(region, rank, index);

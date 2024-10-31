@@ -25,32 +25,37 @@ public class Main {
             // "..7...2......3....2..695..7..5...7...94.8.52...8...3..4..917..6....5......3...1.."; // medium plus
             // "..9.4.6..27.....498.......1...9.8...3.......5...3.7...1.......443.....78..2.1.5.."; // hard
             // "5.2.9.1.....1...8.3....6..2.4....7..6.......1..5....9.9..7....4.6...3.....7.2.5.3"; // very hard
-             ".4.37...89....6.3.6....94.2.7..9...1..34.2.6....81.....2.1.8..6.......1.........9"; // extreme
-            // ".......1.......2...3....4.5.......................6.......7....6.2....8....34...."; // multiple
+            // ".4.37...89....6.3.6....94.2.7..9...1..34.2.6....81.....2.1.8..6.......1.........9"; // *extreme*
+            // ".......1.......2...3....4.5.......................6.......7....6.2....8....34...."; // [D] *normal*
+            // ".2..95...........9...764...7.2.3.6..3.9...4.7..8.1.5.2...581...8...........27..4."; // [D] easy
+            // "..3...6...........6..925..7..7...2....9...7....8...1..7..216..8...........5...9.."; // [D] medium
+            // "..5..1.....9...3...7..6..422..........7...2..........469..5..1...1...5.....1..9.."; // [D] hard
+               "..1.6..9.....52..89...............5.86.....41.4...............62..63.....8..1.7.."; // [D] very hard
             // "..4...9...57.1.2.4...9.7.......8....1...9...2....2.......8.3...4...7.628.........";
             // "6..2845..8...6124..2..9368.1..647.9..6.938....9.152.642854.6.3..4.8....6..632.4.8";
 
-            String cells =
-            // "..:..:..|..:..:..|..:..:..|..:..:..|..:..:..|..:..:..|..:..:..|..:..:..|..:..:..|";
-               ".x.............................xx..x..x...x..x..xx.............................x.";
-
-            // Board board = Board.parse(Type.ODD_EVEN, puzzle, cells);
-            Board board = Board.parse(Type.CLASSIC, puzzle);
+            // Board board = Board.parse(Type.CLASSIC, puzzle);
+            Board board = Board.parse(Type.DIAGONAL, puzzle);
             // board.print(System.out, false);
             Solver solver = new Solver(board, System.out);
-            solver.test(true);
-            /*
+            try {
+                solver.test(true);
+            } catch (Error e) {
+                System.out.printf("%s\n", e);
+            }
 
             long time = System.currentTimeMillis();
-            solver.solve2(true, false);
+            solver = new Solver(board);
+            solver.solveAndEvaluate(true);
             long ellapsed = System.currentTimeMillis() - time;
-            board.print(true);
-            System.out.printf("TIME: %d.%03ds\n" +
-                    "DIFFICULTY: %s\nSYMMETRY: %s\nTECHNIQUES: %d\n\n",
-                    ellapsed / 1000, ellapsed % 1000,
-                    board.difficulty.toString(),
-                    board.symmetry.toString(),
-                    solver.technique);
+            System.out.printf("\n");
+            System.out.printf("""
+                TIME TO SOLVE FROM START: %d.%03ds
+                DIFFICULTY: %s
+                SYMMETRY (if created): %s
+                TECHNIQUES: %d
+                """, ellapsed / 1000, ellapsed % 1000, board.difficulty,
+                board.symmetry, solver.techniques);
 
             /* /
             Generator gen = new Generator();

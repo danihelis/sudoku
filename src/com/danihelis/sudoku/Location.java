@@ -8,9 +8,9 @@ class Location {
     static final int DIAGONAL = 3;
 
     static final int NO_DIAGONAL = -1;
-    static final int BOTH_DIAGONALS = 0;
-    static final int DIAGONAL_1 = 1;
-    static final int DIAGONAL_2 = 2;
+    static final int DIAGONAL_1 = 0;
+    static final int DIAGONAL_2 = 1;
+    static final int BOTH_DIAGONALS = 2;
 
     int rank;
     int index;
