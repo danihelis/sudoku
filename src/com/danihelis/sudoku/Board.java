@@ -2,6 +2,7 @@ package com.danihelis.sudoku;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class Board {
 
@@ -43,6 +44,13 @@ public class Board {
         difficulty = null;
         symmetry = null;
         layout = Layout.createRegularLayout(this);
+    }
+
+    int[] createPositionArray(boolean shuffle) {
+        var list = new Vector<Integer>(IntStream.range(0, positions).boxed()
+                .toList());
+        if (shuffle) Collections.shuffle(list);
+        return list.stream().mapToInt(Integer::intValue).toArray();
     }
 
     int intoPosition(Location location) {
@@ -94,6 +102,35 @@ public class Board {
 
     int ranks(int region) {
         return region == Location.DIAGONAL ? 2 : dimension;
+    }
+
+    int[] getSymmetricPositions(int position, Symmetry symmetry) {
+        var list = new Vector<Integer>();
+        var loc = intoLocation(position);
+        if (symmetry == Symmetry.MIRROR || symmetry == Symmetry.DOUBLE_ROTATION
+                || symmetry == Symmetry.DOUBLE_MIRROR) {
+            list.add(intoPosition(loc.rank, dimension - loc.index - 1));
+        }
+        if (symmetry == Symmetry.FLIP || symmetry == Symmetry.DOUBLE_ROTATION
+                || symmetry == Symmetry.DOUBLE_MIRROR) {
+            list.add(intoPosition(dimension - loc.rank - 1, loc.index));
+        }
+        if (symmetry == Symmetry.ROTATION || symmetry == Symmetry.DOUBLE_MIRROR
+                || symmetry == Symmetry.DOUBLE_ROTATION) {
+            list.add(intoPosition(dimension - loc.rank - 1,
+                        dimension - loc.index - 1));
+        }
+        if (symmetry == Symmetry.TRANSPOSE
+                || symmetry == Symmetry.DOUBLE_ROTATION) {
+            list.add(intoPosition(loc.index, loc.rank));
+        }
+        if (symmetry == Symmetry.DOUBLE_ROTATION) {
+            list.add(intoPosition(loc.index, dimension - loc.rank - 1));
+            list.add(intoPosition(dimension - loc.index - 1, loc.rank));
+            list.add(intoPosition(dimension - loc.index - 1,
+                        dimension - loc.rank - 1));
+        }
+        return list.stream().mapToInt(Integer::intValue).toArray();
     }
 
     void restore(Board board) {
@@ -236,11 +273,13 @@ public class Board {
                         if (value != 0) {
                             output.printf(line == rows / 2 && i == columns / 2
                                     ? "%d".formatted(value) : " ");
-                        } else {
+                        } else if (showCandidates) {
                             int bit = 1 << (line * columns + i);
                             boolean unknown = (candidate[pos] & bit) == 0;
                             output.printf(unknown ? "." :
                                    "%d".formatted(line * columns + i + 1));
+                        } else {
+                            output.printf(" ");
                         }
                     }
                     output.printf(" ");

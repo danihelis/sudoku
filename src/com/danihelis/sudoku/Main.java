@@ -16,7 +16,7 @@ public class Main {
             System.out.printf("TIME: %d.%03ds\n",
                     ellapsed / 1000, ellapsed % 1000);
 
-            /*/
+            /* /
 
             String puzzle =
             // ".5.6.2.8.1.3...6.4.6..7..5...59.62......4......83.19...2..3..9.9.4...5.7.8.5.7.1."; // very easy
@@ -34,20 +34,20 @@ public class Main {
             // "..4...9...57.1.2.4...9.7.......8....1...9...2....2.......8.3...4...7.628.........";
             // "6..2845..8...6124..2..9368.1..647.9..6.938....9.152.642854.6.3..4.8....6..632.4.8";
 
-            // Board board = Board.parse(Type.CLASSIC, puzzle);
-            Board board = Board.parse(Type.DIAGONAL, puzzle);
+            // var board = Board.parse(Type.CLASSIC, puzzle);
+            var board = Board.parse(Type.DIAGONAL, puzzle);
             // board.print(System.out, false);
-            Solver solver = new Solver(board, System.out);
+            var solver = new Solver(board, System.out);
             try {
                 solver.test(true);
             } catch (Error e) {
                 System.out.printf("%s\n", e);
             }
 
-            long time = System.currentTimeMillis();
+            var time = System.currentTimeMillis();
             solver = new Solver(board);
             solver.solveAndEvaluate(true);
-            long ellapsed = System.currentTimeMillis() - time;
+            var ellapsed = System.currentTimeMillis() - time;
             System.out.printf("\n");
             System.out.printf("""
                 TIME TO SOLVE FROM START: %d.%03ds
@@ -57,28 +57,34 @@ public class Main {
                 """, ellapsed / 1000, ellapsed % 1000, board.difficulty,
                 board.symmetry, solver.techniques);
 
-            /* /
-            Generator gen = new Generator();
+            /*/
 
             System.out.printf("Creating new puzzle....\n");
+            var creator = new Creator();
+            var time = System.currentTimeMillis();
+            Board puzzle = null;
+            try {
+                puzzle = creator.create(Type.CLASSIC, Difficulty.NORMAL,
+                        Symmetry.ROTATION);
+            } catch (Error e) {
+                e.printStackTrace();
+                System.out.printf("Attempts: %d", creator.totalAttempts);
+                return;
+            }
+            var ellapsed = System.currentTimeMillis() - time;
 
-            long time = System.currentTimeMillis();
-            Board puzzle = gen.createPuzzle(Type.ODD_EVEN, Difficulty.EXTREME, Symmetry.RANDOM);
-            long ellapsed = System.currentTimeMillis() - time;
-
-            // Layout.createRandomParityCells(puzzle);
-            puzzle.print(false);
-
-            Solver solver = new Solver(puzzle);
-            solver.testSolve(true);
-            solver.solve2(true, false);
-            System.out.printf("TIME: %d.%03ds\nATTEMPTS: %d\n" +
-                    "DIFFICULTY: %s\nSYMMETRY: %s\nTECHNIQUES: %d\n\n",
-                    ellapsed / 1000, ellapsed % 1000,
-                    gen.totalAttempts,
-                    puzzle.difficulty.toString(),
-                    puzzle.symmetry.toString(),
-                    solver.technique);
+            puzzle.print(System.out, false);
+            var solver = new Solver(puzzle);
+            System.out.printf("SOLVED: %b\n", solver.solve(true, false));
+            System.out.printf("""
+                    TYPE: %s
+                    TIME: %.3fs
+                    ATTEMPTS: %d
+                    DIFFICULTY: %s
+                    SYMMETRY: %s
+                    TECHNIQUES: %d
+                    """, puzzle.type, ellapsed / 1000f, creator.totalAttempts,
+                        puzzle.difficulty, puzzle.symmetry, solver.techniques);
             System.out.println(puzzle.export());
 
             /* /

@@ -78,10 +78,11 @@ public class Solver {
             if ((mask & bit) != 0) {
                 board.markBit(position, bit);
                 boolean solved = solve(true, checkUniqueness);
-                if (solved && (!checkUniqueness || solutions > 1)) {
-                    return true;
-                }
+                if (checkUniqueness && solutions > 1) return false;
+                if (solved && !checkUniqueness) return true;
+                var difficulty = board.difficulty;
                 board.restore(backup);
+                board.difficulty = difficulty;
             }
         }
         return false;
