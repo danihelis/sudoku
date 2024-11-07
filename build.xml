@@ -1,5 +1,6 @@
 <project name="sudoku" default="run" basedir=".">
     <property name="src" location="src"/>
+    <property name="res" location="res"/>
     <property name="build" location="build"/>
     <property name="dist" location="dist"/>
     <property name="jar" location="${dist}/${ant.project.name}.jar"/>
@@ -20,6 +21,7 @@
         <mkdir dir="${dist}"/>
         <jar jarfile="${jar}">
             <zipfileset dir="${build}"/>
+            <zipfileset dir="${res}" prefix="res"/>
             <manifest>
                 <attribute name="Main-Class" value="com.danihelis.sudoku.Main"/>
             </manifest>

@@ -57,7 +57,7 @@ public class Main {
                 """, ellapsed / 1000, ellapsed % 1000, board.difficulty,
                 board.symmetry, solver.techniques);
 
-            /*/
+            /* /
 
             System.out.printf("Creating new puzzle....\n");
             var creator = new Creator();
@@ -101,13 +101,17 @@ public class Main {
                     puzzle.type, puzzle.difficulty, puzzle.symmetry);
             }
 
-            /* /
-            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels())
+            /*/
+
+            com.danihelis.sudoku.gui.Utils.setUIFontSize(14f);
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
-                    UIManager.setLookAndFeel(info.getClassName());
+                    // UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
-            new Window();
+            }
+            new com.danihelis.sudoku.gui.App().start();
+
             //*/
         }
         catch (Exception e) {
