@@ -3,6 +3,7 @@ package com.danihelis.sudoku;
 import java.util.*;
 
 public enum Symmetry {
+    NONE("None"),
     ROTATION("Rotation"),
     MIRROR("Mirror"),
     FLIP("Flip"),

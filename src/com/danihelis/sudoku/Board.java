@@ -6,21 +6,21 @@ import java.util.stream.*;
 
 public class Board {
 
-    int rows;               // number of rows in the inner box
-    int columns;            // number of columns in the inner box
-    int dimension;          // number of different values in a box
-    int positions;          // number of values in the whole board
-    int regions;            // number of regions {ROW, COLUMN, GROUP, DIAGONAL?}
-    int[] given;            // value of a given in position (0 if none)
-    int[] solution;         // solution in position (0 if unknown)
-    int[] candidate;        // bit mask with candidates in position
-    int[] possible;         // number of possible candidates in position
+    public int rows;               // number of rows in the inner box
+    public int columns;            // number of columns in the inner box
+    public int dimension;          // number of different values in a box
+    public int positions;          // number of values in the whole board
+    public int regions;            // number of regions {ROW, COLUMN, GROUP, DIAGONAL?}
+    public int[] given;            // value of a given in position (0 if none)
+    public int[] solution;         // solution in position (0 if unknown)
+    public int[] candidate;        // bit mask with candidates in position
+    public int[] possible;         // number of possible candidates in position
 
-    Layout layout;
-    Type type;
-    Symmetry symmetry;
-    Difficulty difficulty;
-    boolean boring;
+    public Layout layout;
+    public Type type;
+    public Symmetry symmetry;
+    public Difficulty difficulty;
+    public boolean boring;
 
     Board(Board board) {
         restore(board);
@@ -57,7 +57,7 @@ public class Board {
         return intoPosition(Location.ROW, location);
     }
 
-    int intoPosition(int row, int column) {
+    public int intoPosition(int row, int column) {
         return intoPosition(Location.ROW, row, column);
     }
 
@@ -227,7 +227,7 @@ public class Board {
         return Arrays.copyOf(list, size);
     }
 
-    int getRank(int row, int col) {
+    public int getRank(int row, int col) {
         int pos = intoPosition(row % dimension, col % dimension);
         return layout.location[pos].rank;
     }

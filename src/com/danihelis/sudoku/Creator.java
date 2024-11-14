@@ -12,7 +12,7 @@ public class Creator {
     Board initial;
     int totalAttempts;
 
-    Board create(Type type) {
+    public Board create(Type type) {
         return create(type, null, null);
     }
 

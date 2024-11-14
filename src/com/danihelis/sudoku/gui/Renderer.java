@@ -18,7 +18,7 @@ abstract class Renderer extends JPanel {
                 resetImage();
             }
         });
-        setPreferredSize(new Dimension(width, height));
+        setMinimumSize(new Dimension(width, height));
     }
 
     void resetImage() {
