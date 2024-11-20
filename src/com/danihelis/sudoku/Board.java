@@ -104,6 +104,10 @@ public class Board {
         return region == Location.DIAGONAL ? 2 : dimension;
     }
 
+    int[] getSymmetricPositions(int position) {
+        return getSymmetricPositions(position, symmetry);
+    }
+
     int[] getSymmetricPositions(int position, Symmetry symmetry) {
         var list = new Vector<Integer>();
         var loc = intoLocation(position);

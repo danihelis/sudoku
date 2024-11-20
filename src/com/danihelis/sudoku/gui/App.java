@@ -62,15 +62,28 @@ public class App extends JPanel /*implements ActionListener*/ {
                     .addComponent(combobox));
                     // .addComponent(button));
         }
+
+        void setSelected(T object) {
+            combobox.setSelectedItem(object);
+        }
+
+        void setEnabled(boolean enabled) {
+            combobox.setEnabled(enabled);
+            label.setEnabled(enabled);
+        }
+
+        T getValue() {
+            return combobox.getItemAt(combobox.getSelectedIndex());
+        }
     }
 
-    class Puzzle extends JPanel {
+    class Puzzle extends JPanel implements ActionListener {
 
         Selector<Type> type;
         Selector<Difficulty> difficulty;
         Selector<Symmetry> symmetry;
-        Selector<Symmetry> board;
-        BoardPanel panel;
+        Selector<Symmetry> layout;
+        BoardPanel board;
         JButton create;
         JButton randomize;
 
@@ -79,73 +92,82 @@ public class App extends JPanel /*implements ActionListener*/ {
                     Arrays.asList(Type.values()));
             difficulty = new Selector<>("Difficulty",
                     Arrays.asList(Difficulty.values()));
+            difficulty.setSelected(Difficulty.NORMAL);
             symmetry = new Selector<>("Puzzle symmetry",
                     Arrays.asList(Symmetry.values()));
-            board = new Selector<>("Board symmetry",
+            symmetry.setSelected(Symmetry.RANDOM);
+            layout = new Selector<>("Board symmetry",
                     Arrays.asList(Symmetry.values()));
+            layout.setSelected(Symmetry.NONE);
+            layout.setEnabled(false);
             create = new JButton("Create",
                     Utils.readIcon("res/puzzle.png", 40, 40));
-            randomize = new JButton("Randomize",
-                    Utils.readIcon("res/shuffle.png", 16, 16));
-            panel = new BoardPanel(BOARD_WIDTH, BOARD_HEIGHT);
+            create.addActionListener(this);
+            board = new BoardPanel(BOARD_WIDTH, BOARD_HEIGHT);
+            board.addBoardListener(b -> setEnabled(true));
             // panel.setBorder(BorderFactory.createLineBorder(new Color(0x7a8a99)));
             create.setVerticalTextPosition(SwingConstants.BOTTOM);
             create.setHorizontalTextPosition(SwingConstants.CENTER);
 
-            var layout = new GroupLayout(this);
-            setLayout(layout);
-            layout.setAutoCreateGaps(true);
-            layout.setAutoCreateContainerGaps(true);
-            layout.setHorizontalGroup(layout.createParallelGroup()
-                .addGroup(GroupLayout.Alignment.CENTER, layout.createSequentialGroup()
-                    .addGroup(layout.createParallelGroup()
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(type.getHorizontalGroup(layout))
-                            .addGroup(difficulty.getHorizontalGroup(layout)))
-                        .addGroup(layout.createSequentialGroup()
-                            .addGroup(symmetry.getHorizontalGroup(layout))
-                            .addGroup(board.getHorizontalGroup(layout))))
+            var panelLayout = new GroupLayout(this);
+            setLayout(panelLayout);
+            panelLayout.setAutoCreateGaps(true);
+            panelLayout.setAutoCreateContainerGaps(true);
+            panelLayout.setHorizontalGroup(panelLayout.createParallelGroup()
+                .addGroup(GroupLayout.Alignment.CENTER, panelLayout.createSequentialGroup()
+                    .addGroup(panelLayout.createParallelGroup()
+                        .addGroup(panelLayout.createSequentialGroup()
+                            .addGroup(type.getHorizontalGroup(panelLayout))
+                            .addGroup(difficulty.getHorizontalGroup(panelLayout)))
+                        .addGroup(panelLayout.createSequentialGroup()
+                            .addGroup(symmetry.getHorizontalGroup(panelLayout))
+                            .addGroup(layout.getHorizontalGroup(panelLayout))))
                     .addGap(20)
                     .addComponent(create, 0, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE))
-                .addComponent(panel, BOARD_WIDTH, BOARD_WIDTH, Short.MAX_VALUE));
-            layout.setVerticalGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.CENTER, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup()
-                            .addGroup(type.getVerticalGroup(layout))
-                            .addGroup(difficulty.getVerticalGroup(layout)))
-                        .addGroup(layout.createParallelGroup()
-                            .addGroup(symmetry.getVerticalGroup(layout))
-                            .addGroup(board.getVerticalGroup(layout))))
-                    .addGroup(GroupLayout.Alignment.CENTER, layout.createSequentialGroup()
-                        // .addComponent(randomize)
+                .addComponent(board, BOARD_WIDTH, BOARD_WIDTH, Short.MAX_VALUE));
+            panelLayout.setVerticalGroup(panelLayout.createSequentialGroup()
+                .addGroup(panelLayout.createParallelGroup(GroupLayout.Alignment.CENTER, false)
+                    .addGroup(panelLayout.createSequentialGroup()
+                        .addGroup(panelLayout.createParallelGroup()
+                            .addGroup(type.getVerticalGroup(panelLayout))
+                            .addGroup(difficulty.getVerticalGroup(panelLayout)))
+                        .addGroup(panelLayout.createParallelGroup()
+                            .addGroup(symmetry.getVerticalGroup(panelLayout))
+                            .addGroup(layout.getVerticalGroup(panelLayout))))
+                    .addGroup(GroupLayout.Alignment.CENTER, panelLayout.createSequentialGroup()
                         .addComponent(create, 0, 80, 80)))
-                .addComponent(panel, BOARD_HEIGHT, BOARD_HEIGHT, Short.MAX_VALUE));
-            /*
-            layout.linkSize(SwingConstants.VERTICAL, type.button, type.combobox,
-                    difficulty.combobox, difficulty.button,
-                    symmetry.combobox, symmetry.button, board.combobox,
-                    board.button);
-            */
-            layout.linkSize(SwingConstants.HORIZONTAL, type.combobox,
-                    difficulty.combobox, symmetry.combobox, board.combobox);
-            // layout.linkSize(create, randomize);
+                .addComponent(board, BOARD_HEIGHT, BOARD_HEIGHT, Short.MAX_VALUE));
+            panelLayout.linkSize(SwingConstants.HORIZONTAL, type.combobox,
+                    difficulty.combobox, symmetry.combobox, layout.combobox);
+        }
+
+        @Override
+        public void setEnabled(boolean enabled) {
+            type.setEnabled(enabled);
+            difficulty.setEnabled(enabled);
+            symmetry.setEnabled(enabled);
+            layout.setEnabled(false);
+            create.setEnabled(enabled);
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent event) {
+            board.create(type.getValue(), difficulty.getValue(),
+                    symmetry.getValue(), layout.getValue());
+            setEnabled(false);
         }
     }
 
     static final int WIDTH = 800;
     static final int HEIGHT = 600;
 
-    JButton randomize;
     JButton generate;
     JButton print;
     JTabbedPane tab;
     Vector<Puzzle> puzzles;
 
     public App() {
-        randomize = new JButton("Randomize All",
-                Utils.readIcon("res/shuffle.png", 16, 16));
-        generate = new JButton("Create Puzzles",
+        generate = new JButton("Create All Puzzles",
                 Utils.readIcon("res/gears.png", 16, 16));
         // generate.addActionListener(this);
         print = new JButton("Print All Puzzles",
@@ -157,14 +179,12 @@ public class App extends JPanel /*implements ActionListener*/ {
         layout.setAutoCreateGaps(true);
         layout.setAutoCreateContainerGaps(true);
         layout.setHorizontalGroup(layout.createSequentialGroup()
-            .addComponent(randomize)
             .addComponent(generate)
             .addComponent(print));
         layout.setVerticalGroup(layout.createParallelGroup()
-            .addComponent(randomize)
             .addComponent(generate)
             .addComponent(print));
-        layout.linkSize(randomize, generate, print);
+        layout.linkSize(generate, print);
 
         tab = new JTabbedPane();
         puzzles = new Vector<>();

@@ -141,7 +141,7 @@ public class Designer implements Printable {
         if (board.type == Type.DIAGONAL) {
             g.setStroke(DIAG_STROKE);
             g.setColor(Utils.alphaColor(Color.BLACK, 0.30));
-            int length = 9 * dim;
+            int length = board.dimension * dim;
             g.drawLine(offX, offY, offX + length, offY + length);
             g.drawLine(offX + length, offY, offX, offY + length);
         }

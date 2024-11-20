@@ -16,20 +16,22 @@ public class Creator {
         return create(type, null, null);
     }
 
-    Board create(Type type, Difficulty difficulty) {
+    public Board create(Type type, Difficulty difficulty) {
         return create(type, difficulty, null);
     }
 
-    Board create(Type type, Difficulty difficulty, Symmetry symmetry) {
+    public Board create(Type type, Difficulty difficulty, Symmetry symmetry) {
         totalAttempts = 0;
         while (totalAttempts < MAXIMUM_ATTEMPTS) {
-            initial = new Board(type);
+            initial = new Board(3, 3, type);
             var solver = new Solver(initial);
             solver.randomized = initial.createPositionArray(true);
             solver.solve(true, false);
-            initial.given = Arrays.copyOf(initial.solution, initial.solution.length);
+            initial.given = Arrays.copyOf(initial.solution,
+                    initial.solution.length);
             initial.difficulty = Difficulty.EASY;
-            initial.symmetry = symmetry;
+            initial.symmetry = symmetry == Symmetry.RANDOM
+                    ? Symmetry.random() : symmetry;
 
             boolean created = false;
             int attempts = 0;
@@ -43,27 +45,13 @@ public class Creator {
                 for (var pos: positions) {
                     if (board.given[pos] == 0) continue;
                     board.given[pos] = 0;
-                    if (symmetry != null) {
-                        for (var p: board.getSymmetricPositions(pos, symmetry)) {
-                            board.given[p] = 0;
-                        }
+                    for (var p: board.getSymmetricPositions(pos)) {
+                        board.given[p] = 0;
                     }
                     solver = new Solver(board);
                     var solved = solver.solveAndEvaluate(
                             difficulty != Difficulty.EASY &&
                             difficulty != Difficulty.NORMAL);
-                    /*
-                            puzzle.difficulty == Difficulty.UNKNOWN)
-                        System.out.printf("BUG! G=%d T=%d S=%d\n",
-                                solver.guesses,
-                                solver.technique,
-                                solver.solutions);
-                    if (solver.evaluation == Difficulty.HARD)
-                        System.out.printf("HARD: %d! P=%d -- %s\n",
-                                solver.solutions,
-                                puzzle.hashCode(),
-                                puzzle.difficulty);
-                    */
                     if (solved && solver.hasUniqueSolution() && (
                                 difficulty == null ||
                                 board.difficulty.level <= difficulty.level)) {

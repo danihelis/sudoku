@@ -4,6 +4,7 @@ import java.util.*;
 
 public enum Symmetry {
     NONE("None"),
+    RANDOM("Random"),
     ROTATION("Rotation"),
     MIRROR("Mirror"),
     FLIP("Flip"),
@@ -23,7 +24,7 @@ public enum Symmetry {
     }
 
     public static Symmetry random() {
-        int index = (int) (Math.random() * (values().length - 2));
+        int index = 2 + (int) (Math.random() * (values().length - 2));
         return values()[index];
     }
 }
