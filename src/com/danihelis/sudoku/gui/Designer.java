@@ -23,9 +23,9 @@ public class Designer implements Printable {
     static final float BORDER = 0.05f;
     static final boolean PRINT_SOLUTION = false;
 
-    Vector<Board> boards;
+    java.util.List<Board> boards;
 
-    public Designer(Vector<Board> boards) {
+    public Designer(java.util.List<Board> boards) {
         this.boards = boards;
     }
 

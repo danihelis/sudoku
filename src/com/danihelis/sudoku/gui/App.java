@@ -77,7 +77,7 @@ public class App extends JPanel /*implements ActionListener*/ {
         }
     }
 
-    class Puzzle extends JPanel implements ActionListener {
+    class Puzzle extends JPanel {
 
         Selector<Type> type;
         Selector<Difficulty> difficulty;
@@ -102,7 +102,7 @@ public class App extends JPanel /*implements ActionListener*/ {
             layout.setEnabled(false);
             create = new JButton("Create",
                     Utils.readIcon("res/puzzle.png", 40, 40));
-            create.addActionListener(this);
+            create.addActionListener(a -> createPuzzle());
             board = new BoardPanel(BOARD_WIDTH, BOARD_HEIGHT);
             board.addBoardListener(b -> setEnabled(true));
             // panel.setBorder(BorderFactory.createLineBorder(new Color(0x7a8a99)));
@@ -150,8 +150,7 @@ public class App extends JPanel /*implements ActionListener*/ {
             create.setEnabled(enabled);
         }
 
-        @Override
-        public void actionPerformed(ActionEvent event) {
+        void createPuzzle() {
             board.create(type.getValue(), difficulty.getValue(),
                     symmetry.getValue(), layout.getValue());
             setEnabled(false);
@@ -169,10 +168,10 @@ public class App extends JPanel /*implements ActionListener*/ {
     public App() {
         generate = new JButton("Create All Puzzles",
                 Utils.readIcon("res/gears.png", 16, 16));
-        // generate.addActionListener(this);
+        generate.addActionListener(e -> puzzles.forEach(p -> p.createPuzzle()));
         print = new JButton("Print All Puzzles",
                 Utils.readIcon("res/print.png", 16, 16));
-        // print.addActionListener(this);
+        print.addActionListener(a -> printPuzzles());
         var buttons = new JPanel();
         var layout = new GroupLayout(buttons);
         setLayout(layout);
@@ -203,6 +202,69 @@ public class App extends JPanel /*implements ActionListener*/ {
         layout.setVerticalGroup(layout.createSequentialGroup()
             .addComponent(buttons, 0, GroupLayout.PREFERRED_SIZE, GroupLayout.PREFERRED_SIZE)
             .addComponent(tab, 0, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
+    }
+
+    void printPuzzles() {
+        if (PrintServiceLookup.lookupPrintServices(null, null).length == 0) {
+            JOptionPane.showMessageDialog(this, """
+                    No printer found!
+                    If you are using linux, install cups-pdf.
+                    """, "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        var boards = new Vector<Board>();
+        for (var puzzle: puzzles) {
+            var board = puzzle.board.board;
+            if (board != null) boards.add(board);
+        }
+        if (boards.isEmpty()) return;
+        var designer = new Designer(boards);
+        var job = PrinterJob.getPrinterJob();
+        job.setPrintable(designer);
+        if (job.printDialog()) {
+            try {
+                HashPrintRequestAttributeSet attr =
+                    new HashPrintRequestAttributeSet();
+                attr.add(new PrinterResolution((int) Designer.DPI,
+                        (int) Designer.DPI, PrinterResolution.DPI));
+                String printer = job.getPrintService().getName();
+                FileNameExtensionFilter filter = null;
+                File file = null;
+                if (printer.equalsIgnoreCase("PDF")) {
+                    filter = new FileNameExtensionFilter(
+                            "Postscript", "ps");
+                } else if (printer.equalsIgnoreCase("Microsoft Print to PDF")) {
+                    filter = new FileNameExtensionFilter(
+                            "Portable Document File (PDF)", "pdf");
+                }
+                if (filter != null) {
+                    JFileChooser chooser = new JFileChooser();
+                    chooser.setFileFilter(filter);
+                    if (chooser.showSaveDialog(this)
+                            != JFileChooser.APPROVE_OPTION) {
+                        return;
+                    }
+                    file = chooser.getSelectedFile();
+                    String path = file.getAbsolutePath();
+                    String extension = filter.getExtensions()[0];
+                    String suffix = path.substring(
+                            path.lastIndexOf(".") + 1);
+                    if (!suffix.equalsIgnoreCase(extension)) {
+                        file = new File(path + "." + extension);
+                    }
+                    attr.add(new Destination(file.toURI()));
+                }
+                job.print(attr);
+                JOptionPane.showMessageDialog(this, file == null
+                            ? String.format("Print job sent to %s!", printer)
+                            : String.format("Document saved at %s.", file),
+                        "Print", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Could not print puzzles!",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
     }
 
     public void start() {
