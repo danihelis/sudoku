@@ -10,7 +10,7 @@ public class Board {
     public int columns;            // number of columns in the inner box
     public int dimension;          // number of different values in a box
     public int positions;          // number of values in the whole board
-    public int regions;            // number of regions {ROW, COLUMN, GROUP, DIAGONAL?}
+    public int regions;            // number of regions (3 or 4)
     public int[] given;            // value of a given in position (0 if none)
     public int[] solution;         // solution in position (0 if unknown)
     public int[] candidate;        // bit mask with candidates in position
@@ -43,7 +43,8 @@ public class Board {
         regions = type == Type.DIAGONAL ? 4 : 3;
         difficulty = null;
         symmetry = null;
-        layout = Layout.createRegularLayout(this);
+        layout = type == Type.IRREGULAR ? Layout.createIrregularLayout(this)
+                : Layout.createRegularLayout(this);
     }
 
     int[] createPositionArray(boolean shuffle) {

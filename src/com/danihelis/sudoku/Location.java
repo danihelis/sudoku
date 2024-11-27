@@ -37,4 +37,9 @@ class Location {
     public String toString() {
         return "(r=%d,i=%d)".formatted(rank, index);
     }
+
+    boolean isValid(Board board) {
+        return rank >= 0 && rank < board.dimension && index >= 0
+                && index < board.dimension;
+    }
 }

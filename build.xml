@@ -1,4 +1,4 @@
-<project name="sudoku" default="run" basedir=".">
+<project name="sudoku" default="dist" basedir=".">
     <property name="src" location="src"/>
     <property name="res" location="res"/>
     <property name="build" location="build"/>

@@ -9,10 +9,9 @@ public class Main {
         try {
             /*/ Layout.Model model = Layout.Model.MONOLOTUS;
             long time = System.currentTimeMillis();
-            Layout layout = Layout.createRandomLayout();
-            System.out.printf("Random layout:\n");
+            var board = new Board(Type.IRREGULAR);
             long ellapsed = System.currentTimeMillis() - time;
-            layout.print();
+            board.print(System.out, false);
             System.out.printf("TIME: %d.%03ds\n",
                     ellapsed / 1000, ellapsed % 1000);
 
