@@ -23,8 +23,16 @@ public enum Symmetry {
         return name;
     }
 
-    public static Symmetry random() {
-        int index = 2 + (int) (Math.random() * (values().length - 2));
+    private static Symmetry randomize(int length) {
+        int index = 2 + (int) (Math.random() * length);
         return values()[index];
+    }
+
+    public static Symmetry randomize() {
+        return randomize(values().length - 2);
+    }
+
+    public static Symmetry randomizeForLayout() {
+        return randomize(4);
     }
 }

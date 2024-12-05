@@ -26,12 +26,16 @@ public class Creator {
             initial = new Board(3, 3, type);
             var solver = new Solver(initial);
             solver.randomized = initial.createPositionArray(true);
-            solver.solve(true, false);
+            try {
+                solver.solve(true, false);
+            } catch (Solver.TooManyGuesses t) {
+                continue;
+            }
             initial.given = Arrays.copyOf(initial.solution,
                     initial.solution.length);
             initial.difficulty = Difficulty.EASY;
             initial.symmetry = symmetry == Symmetry.RANDOM
-                    ? Symmetry.random() : symmetry;
+                    ? Symmetry.randomize() : symmetry;
 
             boolean created = false;
             int attempts = 0;
@@ -49,9 +53,13 @@ public class Creator {
                         board.given[p] = 0;
                     }
                     solver = new Solver(board);
-                    var solved = solver.solveAndEvaluate(
-                            difficulty != Difficulty.EASY &&
-                            difficulty != Difficulty.NORMAL);
+                    var solved = false;
+                    try {
+                        solved = solver.solveAndEvaluate(
+                                difficulty != Difficulty.EASY &&
+                                difficulty != Difficulty.NORMAL);
+                    } catch (Solver.TooManyGuesses t) {
+                    }
                     if (solved && solver.hasUniqueSolution() && (
                                 difficulty == null ||
                                 board.difficulty.level <= difficulty.level)) {

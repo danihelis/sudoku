@@ -5,6 +5,8 @@ import java.util.*;
 
 public class Solver {
 
+    class TooManyGuesses extends Exception {}
+
     enum Result {
         SOLUTION_FOUND,
         STEP_FOUND,
@@ -37,13 +39,14 @@ public class Solver {
         return solutions == 1;
     }
 
-    boolean solveAndEvaluate(boolean mayGuess) {
+    boolean solveAndEvaluate(boolean mayGuess) throws TooManyGuesses {
         boolean result = solve(mayGuess, true);
         board.boring = board.difficulty == Difficulty.NORMAL && techniques < 5;
         return hasUniqueSolution();
     }
 
-    boolean solve(boolean mayGuess, boolean checkUniqueness) {
+    boolean solve(boolean mayGuess, boolean checkUniqueness)
+            throws TooManyGuesses {
         Result result;
         do {
             result = solveOneStep();
@@ -57,7 +60,7 @@ public class Solver {
             return true;
         }
         if (!mayGuess) return false;
-        if (++guesses > 1000) throw new Error("Taking too long to solve!");
+        if (++guesses > 1000) throw new TooManyGuesses();
 
         int position = -1;
         int less = board.dimension + 1;
@@ -373,7 +376,7 @@ public class Solver {
     }
     */
 
-    void test(boolean interactive) {
+    void test(boolean interactive) throws TooManyGuesses {
         var stream = System.out;
         if (interactive) {
             var console = System.console();
