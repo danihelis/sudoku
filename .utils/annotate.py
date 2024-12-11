@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# utb: UVa Online Judge toolbox
+# Danihelis's Sudoku
 # Copyright (C) 2024  Daniel Donadon
 #
 # This program is free software: you can redistribute it and/or modify
@@ -81,4 +81,5 @@ if __name__ == '__main__':
     path = Path(sys.argv[1])
     header = load(sys.argv[2] if len(sys.argv) > 2 else 'copyright-header')
     notice = load(sys.argv[3] if len(sys.argv) > 3 else 'copyright-notice')
+    annotate_python(header, notice, path)
     annotate_java(header, notice, path)
