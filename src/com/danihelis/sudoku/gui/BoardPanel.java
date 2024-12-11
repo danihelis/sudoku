@@ -35,7 +35,8 @@ public class BoardPanel extends Renderer {
             Board board = null;
             while (board == null) {
                 try {
-                    board = new Creator().create(type, difficulty, symmetry);
+                    board = new Creator().create(type, difficulty, symmetry,
+                            layout);
                 } catch (Error e) {
                     e.printStackTrace();
                 }

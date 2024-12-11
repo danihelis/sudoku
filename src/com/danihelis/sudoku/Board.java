@@ -27,10 +27,14 @@ public class Board {
     }
 
     Board(Type type) {
-        this(3, 3, type);
+        this(3, 3, type, null);
     }
 
-    Board(int rows, int columns, Type type) {
+    Board(Type type, Symmetry layoutSymmetry) {
+        this(3, 3, type, layoutSymmetry);
+    }
+
+    Board(int rows, int columns, Type type, Symmetry layoutSymmetry) {
         this.rows = rows;
         this.columns = columns;
         this.type = type;
@@ -42,9 +46,8 @@ public class Board {
         possible = new int[positions];
         regions = type == Type.DIAGONAL ? 4 : 3;
         difficulty = null;
-        symmetry = null;
-        layout = type == Type.IRREGULAR ? Layout.createIrregularLayout(this)
-                : Layout.createRegularLayout(this);
+        layout = type != Type.IRREGULAR ? Layout.createRegularLayout(this)
+                : Layout.createIrregularLayout(this, layoutSymmetry);
     }
 
     int[] createPositionArray(boolean shuffle) {

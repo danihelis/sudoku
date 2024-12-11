@@ -5,8 +5,7 @@ import java.util.*;
 public enum Type {
     CLASSIC("Classic"),
     DIAGONAL("Diagonal"),
-    IRREGULAR("Irregular"),
-    ODD_EVEN("Odd-even");
+    IRREGULAR("Irregular");
 
     String name;
 

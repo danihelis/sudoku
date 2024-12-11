@@ -12,12 +12,12 @@ public class Layout {
         return layout;
     }
 
-    static Layout createIrregularLayout(Board board) {
+    static Layout createIrregularLayout(Board board, Symmetry symmetry) {
         Layout layout = new Layout(board);
         var created = false;
         while (!created) {
             try {
-                layout.loadIrregularLayout(Symmetry.RANDOM);
+                layout.loadIrregularLayout(symmetry);
                 created = true;
             } catch (InvalidLayout i) {}
         }
@@ -63,6 +63,8 @@ public class Layout {
     void loadIrregularLayout(Symmetry symmetry) throws InvalidLayout {
         if (symmetry == Symmetry.RANDOM) {
             symmetry = symmetry.randomizeForLayout();
+        } else if (symmetry == Symmetry.NONE) {
+            symmetry = null;
         }
         for (int pos = 0; pos < board.positions; pos++) {
             location[pos] = null;

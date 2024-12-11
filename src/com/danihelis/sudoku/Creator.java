@@ -21,9 +21,14 @@ public class Creator {
     }
 
     public Board create(Type type, Difficulty difficulty, Symmetry symmetry) {
+        return create(type, difficulty, symmetry, null);
+    }
+
+    public Board create(Type type, Difficulty difficulty, Symmetry symmetry,
+            Symmetry layout) {
         totalAttempts = 0;
         while (totalAttempts < MAXIMUM_ATTEMPTS) {
-            initial = new Board(3, 3, type);
+            initial = new Board(3, 3, type, layout);
             var solver = new Solver(initial);
             solver.randomized = initial.createPositionArray(true);
             try {

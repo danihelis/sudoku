@@ -90,6 +90,7 @@ public class App extends JPanel /*implements ActionListener*/ {
         Puzzle() {
             type = new Selector<>("Sudoku type",
                     Arrays.asList(Type.values()));
+            type.combobox.addItemListener(i -> changeLayoutState());
             difficulty = new Selector<>("Difficulty",
                     Arrays.asList(Difficulty.values()));
             difficulty.setSelected(Difficulty.NORMAL);
@@ -97,9 +98,8 @@ public class App extends JPanel /*implements ActionListener*/ {
                     Arrays.asList(Symmetry.values()));
             symmetry.setSelected(Symmetry.RANDOM);
             layout = new Selector<>("Board symmetry",
-                    Arrays.asList(Symmetry.values()));
-            layout.setSelected(Symmetry.NONE);
-            layout.setEnabled(false);
+                    Arrays.asList(Symmetry.valuesForLayout()));
+            layout.setSelected(Symmetry.RANDOM);
             create = new JButton("Create",
                     Utils.readIcon("res/puzzle.png", 40, 40));
             create.addActionListener(a -> createPuzzle());
@@ -139,6 +139,7 @@ public class App extends JPanel /*implements ActionListener*/ {
                 .addComponent(board, BOARD_HEIGHT, BOARD_HEIGHT, Short.MAX_VALUE));
             panelLayout.linkSize(SwingConstants.HORIZONTAL, type.combobox,
                     difficulty.combobox, symmetry.combobox, layout.combobox);
+            changeLayoutState();
         }
 
         @Override
@@ -146,14 +147,20 @@ public class App extends JPanel /*implements ActionListener*/ {
             type.setEnabled(enabled);
             difficulty.setEnabled(enabled);
             symmetry.setEnabled(enabled);
-            layout.setEnabled(false);
             create.setEnabled(enabled);
+            if (enabled) changeLayoutState();
+            else layout.setEnabled(false);
         }
 
         void createPuzzle() {
             board.create(type.getValue(), difficulty.getValue(),
                     symmetry.getValue(), layout.getValue());
             setEnabled(false);
+        }
+
+        void changeLayoutState() {
+            layout.combobox.setEnabled(type.combobox.getSelectedItem()
+                    == Type.IRREGULAR);
         }
     }
 

@@ -23,16 +23,20 @@ public enum Symmetry {
         return name;
     }
 
-    private static Symmetry randomize(int length) {
-        int index = 2 + (int) (Math.random() * length);
-        return values()[index];
+    private static Symmetry randomize(Symmetry[] values) {
+        int index = 2 + (int) (Math.random() * (values.length - 2));
+        return values[index];
     }
 
     public static Symmetry randomize() {
-        return randomize(values().length - 2);
+        return randomize(values());
+    }
+
+    public static Symmetry[] valuesForLayout() {
+        return new Symmetry[] {NONE, RANDOM, ROTATION, MIRROR, FLIP, TRANSPOSE};
     }
 
     public static Symmetry randomizeForLayout() {
-        return randomize(4);
+        return randomize(valuesForLayout());
     }
 }
