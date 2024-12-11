@@ -21,6 +21,9 @@ The Java package has three main functionalities:
    a single page, each one randomly generated from the input settings. You can
    download a [PDF sample here](docs/sample.pdf).
 
+This program took inspiration from [QQwing](https://qqwing.com/download.html),
+which I strongly recommend.
+
 
 ## Screenshots
 
