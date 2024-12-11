@@ -33,7 +33,7 @@ import javax.print.attribute.standard.*;
 
 import com.danihelis.sudoku.*;
 
-public class App extends JPanel /*implements ActionListener*/ {
+public class App extends JPanel {
 
     static final int NUMBER_PUZZLES = 6;
     static final int BOARD_WIDTH = 500;
@@ -178,7 +178,7 @@ public class App extends JPanel /*implements ActionListener*/ {
         }
 
         void changeLayoutState() {
-            layout.combobox.setEnabled(type.combobox.getSelectedItem()
+            layout.setEnabled(type.combobox.getSelectedItem()
                     == Type.IRREGULAR);
         }
     }
