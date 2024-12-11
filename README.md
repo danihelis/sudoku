@@ -1,7 +1,7 @@
 # Danihelis's Sudoku
 
 A Java desktop app to generate and print Sudoku puzzles. See the
-[installation]('#installation') section below for instructions on how to execute
+[installation](#installation) section below for instructions on how to execute
 the program in your machine.
 
 The Java package has three main functionalities:
