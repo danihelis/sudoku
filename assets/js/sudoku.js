@@ -138,15 +138,23 @@ class Board {
 
   static copy(board) {
     let copied = new Board(board.type, null, board.rows, board.columns, true);
-    copied.given = board.given.slice();
-    copied.solution = board.solution.slice();
-    copied.candidate = board.candidate.slice();
-    copied.possible = board.possible.slice();
     copied.regions = board.regions;
     copied.difficulty = board.difficulty;
     copied.symmetry = board.symmetry;
     copied.layout = board.layout;
+    copied.reload(board);
     return copied;
+  }
+
+  reload(board) {
+    if (this.type !== board.type || this.layout !== board.layout ||
+        this.positions !== board.positions) {
+      throw "cannot reload from a different board";
+    }
+    this.given = board.given.slice();
+    this.solution = board.solution.slice();
+    this.candidate = board.candidate.slice();
+    this.possible = board.possible.slice();
   }
 
   create_position_array() {
@@ -309,16 +317,31 @@ class Board {
     let array = [...this.given];
     array.unshift(this.type === "diagonal" ? 1
         : this.type === "irregular" ? 2 : 0);
+    if (this.type == "irregular") {
+      array.push(...this.layout.cell.map(cell => cell.rank));
+    }
+
+    console.log(array);
+
     return DigitStream.encode(array);
   }
 
   static import(sequence) {
     let array = DigitStream.decode(sequence);
+
+    console.log(array);
+
     let type = array[0] === 0 ? "standard" : array[0] === "diagonal" ? 1
-        : array[0] === "irregular" ? 2 : null;
+        : array[0] === 2 ? "irregular" : null;
     if (type === null) throw "invalid board type";
 
-    let board = new Board(type);
+    let board = new Board();
+    board.type = type;
+    if (type == "irregular") {
+      board.layout = new Layout(board);
+      board.layout.load(array.slice(board.positions + 1));
+    }
+
     for (let pos = 0; pos < board.positions; pos++) {
       board.given[pos] = array[pos + 1];
     }
@@ -368,7 +391,7 @@ class Layout {
     return layout;
   }
 
-  location;   // rank and index from a position
+  cell;       // rank and index from a position
   position;   // position from a group rank and index
 
   constructor(board) {
@@ -377,6 +400,17 @@ class Layout {
     this.position = new Array(board.dimension);
     for (let i = 0; i < this.position.length; i++) {
       this.position[i] = new Int16Array(board.dimension);
+    }
+  }
+
+  load(content) {
+    let box = {};
+    for (let pos = 0; pos < this.board.positions; pos++) {
+      let rank = content[pos];
+      let index = (box[rank] ?? -1) + 1;
+      this.cell[pos] = new Cell(rank, index);
+      this.position[rank][index] = pos;
+      box[rank] = index;
     }
   }
 
@@ -389,7 +423,7 @@ class Layout {
             + index % this.board.columns;
         let pos = this.board.into_position(new Cell(row, column));
         this.position[rank][index] = pos;
-        this.cell[pos] = new Cell(rank, index);
+        this.cell[pos] = new Cell(rank, index, "box");
       }
     }
   }
@@ -402,6 +436,7 @@ class Layout {
     } else if (symmetry === "none") {
       symmetry = null;
     }
+    this.symmetry = symmetry;
 
     this.cell.fill(null);
     for (let rank = 0; rank < this.board.dimension - 1; rank++) {
@@ -441,13 +476,13 @@ class Layout {
           } else {
             if (same && index >= this.board.dimension - 1) continue;
             let srank = same ? rank : rank + 1;
-            this.cell[spos] = new Cell(srank, index);
+            this.cell[spos] = new Cell(srank, index, "box");
             this.position[srank][index] = spos;
             if (available.has(spos)) available.delete(spos);
           }
         }
 
-        this.cell[pos] = new Cell(rank, index);
+        this.cell[pos] = new Cell(rank, index, "box");
         this.position[rank][index] = pos;
 
         let not_allocated = this.board.dimension - index - 1;
@@ -469,7 +504,7 @@ class Layout {
     let index = 0;
     for (let pos = 0; pos < this.board.positions; pos++) {
       if (!this.cell[pos]) {
-        this.cell[pos] = new Cell(this.board.dimension - 1, index);
+        this.cell[pos] = new Cell(this.board.dimension - 1, index, "box");
         this.position[this.board.dimension - 1][index] = pos;
         index++;
       }
@@ -524,20 +559,33 @@ class Solver {
 
   constructor(board) {
     this.board = board;
-    board.reset_solution();
-    board.difficulty = null;
-    this.techniques = this.guesses = this.solutions = 0;
   }
 
-  has_unique_solution() {
-    return this.solutions === 1;
+  reset() {
+    this.board.reset_solution();
+    this.techniques = this.guesses = 0;
   }
 
-  solve_and_evaluate(may_guess) {
-    let result = this.solve(may_guess, true);
+  create_basic_solution() {
+    this.reset();
+    this.board.given.fill(0);
+    return this.solve(true);
+  }
+
+  solve_and_evaluate(may_guess = true) {
+    this.reset();
+    let result = false;
+    try {
+      result = this.solve(may_guess, true);
+    } catch (e) {
+      if (e === "not unique") return false;
+      throw e;
+    }
+    this.board.difficulty = this.guesses > 0 ? "hard"
+        : this.techniques > 0 ? "normal" : "easy";
     this.board.boring = this.board.difficulty === "normal"
         && this.techniques < 5;
-    return this.has_unique_solution();
+    return result;
   }
 
   solve(may_guess, check_uniqueness) {
@@ -545,14 +593,7 @@ class Solver {
     while (!result) {
       result = this.solve_one_step();
     }
-    if (result === Solver.SOLUTION_FOUND) {
-      if (this.solutions === 0) {
-        this.board.difficulty = this.guesses > 0 ? "hard"
-            : this.techniques > 0 ? "normal" : "easy";
-      }
-      this.solutions++;
-      return true;
-    }
+    if (result === Solver.SOLUTION_FOUND) return true;
     if (!may_guess) return false;
     if (++this.guesses > 1000) throw "too many guesses";
 
@@ -569,20 +610,21 @@ class Solver {
         }
       }
     }
+
     let backup = Board.copy(this.board);
     let mask = this.board.candidate[position];
+    let has_solution = false;
     for (let i = 0, bit = 1; i < this.board.dimension; i++, bit <<= 1) {
       if (mask & bit) {
         this.board.mark_bit(position, bit);
         let solved = this.solve(true, check_uniqueness);
-        if (check_uniqueness && this.solutions > 1) return false;
         if (solved && !check_uniqueness) return true;
-        let difficulty = this.board.difficulty;
-        this.board = backup;
-        this.board.difficulty = difficulty;
+        if (solved && has_solution) throw "not unique";
+        has_solution |= solved;
+        this.board.reload(backup);
       }
     }
-    return false;
+    return has_solution;
   }
 
   solve_one_step() {
@@ -826,8 +868,8 @@ class Solver {
 
 class Creator {
 
-  static ATTEMPTS_BEFORE_NEW_PUZZLE = 30;
-  static MAXIMUM_ATTEMPTS = 300;
+  static ATTEMPTS_BEFORE_NEW_PUZZLE = 5;
+  static MAXIMUM_ATTEMPTS = 50;
 
   static create(type = "standard", difficulty = "normal", symmetry, layout) {
     let creator = new Creator();
@@ -845,18 +887,24 @@ class Creator {
       solver.randomized = this.initial.create_position_array();
       shuffle_array(solver.randomized);
       try {
-        solver.solve(true, false);
+        solver.create_basic_solution();
       } catch (e) {
         if (e !== "too many guesses") throw e;
         continue;
       }
+
       this.initial.given = this.initial.solution.slice();
       this.initial.difficulty = "easy";
+
+      // debugger;
 
       if (!symmetry) {
         let choices = ["rotation", "mirror", "flip", "transpose"];
         if (difficulty !== "hard") {
           choices.push("double_mirror", "double_rotation");
+        }
+        if (this.initial.type === "irregular") {
+          choices = [this.initial.layout.symmetry];
         }
         symmetry = choice_array(choices);
       }
@@ -872,6 +920,7 @@ class Creator {
         this.puzzle = new Board(board);
         attempts++;
         this.total_attempts++;
+        board.tag = 0;
 
         for (let pos of positions) {
 
@@ -889,8 +938,15 @@ class Creator {
             if (e !== "too many guesses") throw e;
           }
 
-          if (solved && solver.has_unique_solution() &&
-              (!level || difficulty_level(board.difficulty) <= level)) {
+          /*
+          if (solver.guesses) {// && !board.tag) {
+            board.tag = 1;
+            debugger;
+          }
+          */
+
+          if (solved && (!level
+                || difficulty_level(board.difficulty) <= level)) {
             created = !level || board.difficulty === difficulty;
             this.puzzle = Board.copy(board);  // store board
           } else {
@@ -899,7 +955,10 @@ class Creator {
         }
       }
 
-      if (created) return this.puzzle;
+      if (created) {
+        console.log('total_attempts', this.total_attempts);
+        return this.puzzle;
+      }
     }
 
     throw "cannot create puzzle";

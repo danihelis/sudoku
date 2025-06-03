@@ -13,7 +13,7 @@ class Screen {
     $(".buttons .play").on("click", () => self.play());
 
     this.options = {
-      type: ["standard"],
+      type: ["standard", "irregular"],
       difficulty: ["easy", "normal", "hard"],
     };
     this.choices = {
@@ -44,17 +44,28 @@ class Screen {
       change(0);
     }
 
-    $(".loading").toggle(false);
+    $(".error").toggle(false);
     $(".buttons, .options").toggle(true);
   }
 
   load(sequence) {
-    $(".buttons, .options, .loading").toggle(false);
-    let puzzle = Board.import(sequence);
-    let solver = new Solver(puzzle);
-    if (!solver.solve_and_evaluate(true)) throw "invalid puzzle";
+    $(".buttons, .options, .error").toggle(false);
+    $(".loading").toggle(true);
 
-    let sudoku = new Sudoku(puzzle);
+    function execute() {
+      let puzzle = Board.import(sequence);
+      let solver = new Solver(puzzle);
+      let solved = solver.solve_and_evaluate(true);
+      $(".loading").toggle(false);
+
+      if (!solved) {
+        $(".error").toggle(true);
+        throw "invalid puzzle";
+      }
+      let sudoku = new Sudoku(puzzle);
+    }
+
+    setTimeout(execute, 0);
   }
 
   play() {
@@ -63,10 +74,16 @@ class Screen {
     $(".loading").toggle(true);
 
     function create() {
-      let puzzle = Creator.create(self.choices.type, self.choices.difficulty);
-      let query = new URLSearchParams();
-      query.append("p", puzzle.export());
-      window.location.replace(`?${query}`);
+      try {
+        let puzzle = Creator.create(self.choices.type, self.choices.difficulty);
+        let query = new URLSearchParams();
+        query.append("p", puzzle.export());
+        window.location.replace(`?${query}`);
+      } catch (e) {
+        $(".loading").toggle(false);
+        $(".error").toggle(true);
+        throw e;
+      }
     }
 
     setTimeout(create, 0);

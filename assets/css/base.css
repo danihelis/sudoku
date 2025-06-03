@@ -1,9 +1,8 @@
 :root {
-  --screen-width: max(min(90vw, 60vh), 360px);
-  --thick-border: 0.2rem solid #5e5c64;
-  --thin-border: 0.1rem solid #5e5c64;
-  --selected-border: 0.3rem solid #62a0ea;
-  --selected-shadow: 0 0 0 0.2rem #62a0ea;
+  --screen-width: max(min(90vw, 55vh), 360px);
+  --thick-border: 3px solid #5e5c64;
+  --thin-border: 1px solid #5e5c64;
+  --selected-shadow: 0 0 0 3px #62a0ea;
 }
 
 body {
@@ -97,6 +96,7 @@ body {
       height: 2.5em !important;
       display: flex;
       padding: 1em;
+      font-size: 100%;
 
       span {
         flex: 1;
@@ -131,7 +131,7 @@ body {
         display: grid;
         grid-template: repeat(3, calc(100% / 3)) / repeat(3, calc(100% / 3));
         font-size: 30%;
-        padding: 0.3em;
+        padding: 4px;
 
         & > span {
           aspect-ratio: 1;
@@ -194,7 +194,7 @@ body {
     border-radius: 0.5em;
     text-align: center;
     width: 1.8em;
-    font-size: max(100%, 16pt);
+    font-size: max(140%, 16pt);
     /* padding: 0.2em 0; */
 
     background: #99c1f1;
@@ -257,9 +257,13 @@ body {
     }
   }
 
-  .loading {
+  .loading, .error {
     color: #888;
     text-align: center;
+
+    i + p {
+      margin-top: 4rem;
+    }
   }
 
   .footer {
