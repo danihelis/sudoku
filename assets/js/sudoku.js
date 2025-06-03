@@ -44,27 +44,23 @@ class DigitStream {
     for (let i = 0, j = 1; i < array.length; i += 2, j++) {
       content[j] = (array[i] % 0xf) | (((array[i + 1] || 0) % 0xf) << 4);
     }
-    console.log(array);
-    console.log(content);
-    return content.toBase64();
+    return window.btoa(String.fromCharCode(...content));
   }
 
   static decode(string) {
-    console.log(string);
-    let content = Uint8Array.fromBase64(string);
-    console.log(content);
-    let array = [];
-    let size = content[0];
+    let content = window.atob(string);
+    let size = content.charCodeAt(0);
     if (size !== (content.length - 1) * 2
         && size + 1 !== (content.length - 1) * 2) {
       throw "invalid content size";
     }
+
+    let array = [];
     for (let i = 1; i < content.length; i++) {
-      let value = content[i];
+      let value = content.charCodeAt(i);
       array.push(value & 0xf);
       if (array.length < size) array.push((value >> 4) & 0xf);
     }
-    console.log(array);
     return array;
   }
 }
@@ -856,9 +852,13 @@ class Creator {
       }
       this.initial.given = this.initial.solution.slice();
       this.initial.difficulty = "easy";
+
       if (!symmetry) {
-        symmetry = choice_array(["rotation", "mirror", "flip", "transpose",
-            "double_mirror", "double_rotation"]);
+        let choices = ["rotation", "mirror", "flip", "transpose"];
+        if (difficulty !== "hard") {
+          choices.push("double_mirror", "double_rotation");
+        }
+        symmetry = choice_array(choices);
       }
       this.initial.symmetry = symmetry;
 

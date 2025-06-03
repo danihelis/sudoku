@@ -64,14 +64,12 @@ class Screen {
 
     function create() {
       let puzzle = Creator.create(self.choices.type, self.choices.difficulty);
-      console.log(puzzle);
       let query = new URLSearchParams();
       query.append("p", puzzle.export());
       window.location.replace(`?${query}`);
     }
 
     setTimeout(create, 0);
-    console.log("click");
   }
 }
 
@@ -82,8 +80,6 @@ class Sudoku {
     this.board = Board.copy(this.puzzle);
     this.board.reset_solution();
     this.board.candidate.fill(0);
-
-    console.log(this.puzzle.type, this.puzzle.difficulty, this.puzzle.symmetry);
 
     this.selected = null;
     this.guess_mode = false;
