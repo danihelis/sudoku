@@ -1,76 +1,12 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sudoku</title>
   </head>
-  <body data-database="assets/json/database.json">
-
-    <!-- Styles -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="assets/css/base.css" />
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.0/dist/jquery.slim.min.js"></script>
-    <script src="assets/js/sudoku.js"></script>
-    <script src="assets/js/sudoku-ui.js"></script>
-
-    <div class="screen">
-      <div class="header">
-        <a href="?">Sudoku</a>
-        <span class="difficulty"></span>
-      </div>
-
-      <div class="options" style="display: none"></div>
-
-      <div id="option-template" class="option" style="display: none">
-        <div class="selector selector-left">
-          <i class="fa-solid fa-circle-chevron-left"></i>
-        </div>
-        <span class="value"></span>
-        <div class="selector selector-right">
-          <i class="fa-solid fa-circle-chevron-right"></i>
-        </div>
-      </div>
-
-      <div class="buttons" style="display: none">
-        <div class="button play">
-          <i class="fa-solid fa-play"></i><span>Play</span>
-        </div>
-        <div class="button continue disabled">
-          <i class="fa-solid fa-clock"></i><span>Continue</span>
-        </div>
-      </div>
-
-      <div class="loading" style="display: none">
-        <i class="fa-solid fa-spinner fa-spin fa-2xl"></i>
-      </div>
-
-      <div class="error">
-        <i class="fa-solid fa-circle-exclamation fa-2xl"></i>
-        <p>Cannot load the puzzle</p>
-      </div>
-
-      <div class="board" style="display: none">
-        <div class="grid"></div>
-      </div>
-
-      <div class="toolbar" style="display: none"></div>
-
-      <div class="time" style="display: none">
-        <i class="fa-solid fa-stopwatch"></i>
-        <span class="value"></span>
-      </div>
-
-      <div class="footer">
-        Created by Daniel Donadon.
-        Check the <a href="https://github.com/danihelis/sudoku">github project</a>.
-      </div>
-    </div>
-
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
