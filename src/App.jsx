@@ -3,7 +3,7 @@ import { PuzzlePage } from './interface/PuzzlePage.jsx';
 import { Creator } from './sudoku/sudoku.js';
 
 export default function App() {
-  const puzzle = Creator.create("standard");
+  const puzzle = Creator.create();
   puzzle.reset_solution();
 
   return (

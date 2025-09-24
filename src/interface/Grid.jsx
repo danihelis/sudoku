@@ -71,10 +71,10 @@ export function Grid({puzzle, cursor, highlight, state, onClick}) {
 
   return (
     <div className="relative">
-      {false ? (
-        <svg className="absolute top-0 left-0 w-full h-full stroke-slate-400" width="360" height="360">
-          <line x1="0" y1="0" x2="360" y2="360" strokeWidth="1" stroke-dasharray="5,5" />
-          <line x1="360" y1="0" x2="0" y2="360" strokeWidth="1" stroke-dasharray="5,5" />
+      {puzzle.type === 'diagonal' ? (
+        <svg className="absolute top-0 left-0 w-full h-full stroke-slate-400 -z-1" width="360" height="360">
+          <line x1="0" y1="0" x2="360" y2="360" strokeWidth="1" strokeDasharray="5,5" />
+          <line x1="360" y1="0" x2="0" y2="360" strokeWidth="1" strokeDasharray="5,5" />
         </svg>
       ) : null}
       <div className="grid grid-cols-[repeat(9,40px)]">
