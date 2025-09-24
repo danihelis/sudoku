@@ -1,6 +1,6 @@
 "use strict";
 
-function shuffle_array(array) {
+export function shuffle_array(array) {
   for (let i = 0; i < array.length - 1; i++) {
     let j = i + Math.floor(Math.random() * (array.length - i));
     if (i != j) {
@@ -12,7 +12,9 @@ function shuffle_array(array) {
   return array;
 }
 
-const choice_array = (array) => array[Math.floor(Math.random() * array.length)];
+export function choice_array(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
 
 function into_value(bit) {
   let value = 0;
