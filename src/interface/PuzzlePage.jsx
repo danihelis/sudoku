@@ -31,51 +31,44 @@ function getInitialButtonState(puzzle) {
   return state;
 }
 
-const preSolve = false;  // for tests only!
-
-export function PuzzlePage({puzzle, onSolved}) {
-  const [gridState, setGridState] = useState(getInititalGridState(puzzle));
-  const [buttonState, setButtonState] = useState(getInitialButtonState(puzzle));
-  const [highlight, setHighlight] = useState(null);
-  const [tapMode, setTapMode] = useState(false);
-  const [cursor, setCursor] = useState(null);
-  const [history, setHistory] = useState({past: [], future: []});
-  const [solution, setSolution] = useState(Board.copy(puzzle));
+export function PuzzlePage({puzzle, onSolved, showSolution = false}) {
+  const [gridState, setGridState] = useState();
+  const [buttonState, setButtonState] = useState();
+  const [highlight, setHighlight] = useState();
+  const [tapMode, setTapMode] = useState();
+  const [cursor, setCursor] = useState();
+  const [history, setHistory] = useState();
+  const [solution, setSolution] = useState();
   const [solved, setSolved] = useState(false);
+  const [showFireworks, setShowFireworks] = useState(true);
 
   useEffect(() => {
+    let solver = new Solver(Board.copy(puzzle));
+    solver.solve(true, false);
+    setSolution(solver.board);
     puzzle.reset_solution();
-    if (preSolve) {
-      let state = [...gridState];
-      let reverse = [];
-      let positions = [];
-      for (let pos = 0; pos < puzzle.positions; pos++) {
-        if (!puzzle.given[pos] && !state[pos].value) {
-          changeValue(pos, solution.solution[pos], state, reverse);
-          positions.push(pos);
-        }
-      }
-      let number = 2;
-      while (number-- > 0) {
-        let pos = choice_array(positions);
-        changeValue(pos, 0, state, reverse);
-      }
-      setGridState(state);
-    }
-  }, []);
+
+    setGridState(getInititalGridState(puzzle));
+    setButtonState(getInitialButtonState(puzzle));
+    setHighlight(null);
+    setCursor(null);
+    setHistory({past: [], future: []});
+    setSolved(false);
+    setShowFireworks(true);
+  }, [puzzle]);
 
   useEffect(() => {
+    if (!buttonState) return;
     const state = {...buttonState};
     for (let i = 1; i <= puzzle.dimension; i++) {
-      const count = gridState.filter(s => s.value == i).length;
-      // console.log(i, 'has count', count);
+      const count = gridState.filter(s => s.value == i).length || 0;
       state[i] = {...state[i], disabled: count >= puzzle.dimension};
     }
     state.undo = {...state.undo, disabled: history.past.length === 0};
     state.redo = {...state.redo, disabled: history.future.length === 0};
     setButtonState(state);
 
-    let check = true;
+    let check = !!solution;
     for (let pos = 0; check && pos < puzzle.positions; pos++) {
       check = gridState[pos].value == solution.solution[pos];
     }
@@ -85,6 +78,26 @@ export function PuzzlePage({puzzle, onSolved}) {
       setSolved(true);
     }
   }, [history, gridState]);
+
+  useEffect(() => {
+    if (!showSolution) return;
+    let state = [...gridState];
+    let reverse = [];
+    let positions = [];
+    for (let pos = 0; pos < puzzle.positions; pos++) {
+      if (!puzzle.given[pos] && !state[pos].value) {
+        changeValue(pos, solution.solution[pos], state, reverse);
+        positions.push(pos);
+      }
+    }
+    let except = 0; // for debug only
+    while (except-- > 0) {
+      let pos = choice_array(positions);
+      changeValue(pos, 0, state, reverse);
+    }
+    setGridState(state);
+    setShowFireworks(false);
+  }, [showSolution]);
 
   const updateErrors = (state, value) => {
     for (let pos = 0; pos < puzzle.positions; pos++) {
@@ -226,30 +239,29 @@ export function PuzzlePage({puzzle, onSolved}) {
   };
 
   return (
-    <div className="flex flex-col items-center mt-10 gap-5">
-      <div className="uppercase text-sm text-gray-500">
-        <span className="">{puzzle.type}</span>
-        <span className="mx-2">&diams;</span>
-        <span className="">{puzzle.difficulty}</span>
-      </div>
-      <Grid puzzle={puzzle} cursor={cursor} highlight={highlight} state={gridState} onClick={handleGridClick} />
-      {!solved ? (
-        <div className="max-w-xs flex flex-col items-center gap-5">
-          <ButtonPanel state={buttonState} onClick={handleButtonClick} />
-          <TapModeInput tapMode={tapMode} onToggle={handleTapToggle} />
+    <div className="flex flex-col items-center gap-1 h-full justify-evenly">
+      <div className="flex flex-col gap-4 items-center">
+        <div className="uppercase text-sm text-gray-500">
+          <span className="">{puzzle.type}</span>
+          <span className="mx-2">&diams;</span>
+          <span className="">{puzzle.difficulty}</span>
         </div>
-      ) : (
-        <>
-          <div className="flex flex-col gap-2 items-center">
-            <p className="uppercase text-blue-800 text-xl">Puzzle solved</p>
-            <p className="text-slate-400">Congratulations!</p>
+        {gridState && <Grid puzzle={puzzle} cursor={cursor} highlight={highlight} state={gridState} onClick={handleGridClick} />}
+      </div>
+      <div className="h-25">
+        {!solved ? (
+          <div className="max-w-xs flex flex-col items-center gap-5">
+            {buttonState && <ButtonPanel state={buttonState} onClick={handleButtonClick} />}
+            {/*<TapModeInput tapMode={tapMode} onToggle={handleTapToggle} />*/}
           </div>
-          <Fireworks
+        ) : null}
+      </div>
+      {solved && showFireworks ? (
+        <Fireworks
             options={{opacity: 0.5, flickering: 0}}
             style={{top: 0, left: 0, width: '100%', height: '100%', position: 'absolute', background: 'rgb(0 0 0 / 0.3)'}}
           />
-        </>
-      )}
+      ) : null}
     </div>
   );
 }

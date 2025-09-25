@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   width="800px"
+   height="800px"
+   viewBox="0 0 16 16"
+   fill="#000000"
+   class="bi bi-grid-3x3"
+   version="1.1"
+   id="svg1"
+   sodipodi:docname="irregular.svg"
+   inkscape:export-filename="grid.png"
+   inkscape:export-xdpi="96"
+   inkscape:export-ydpi="96"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#000000"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="true"
+     inkscape:deskcolor="#ffffff"
+     inkscape:export-bgcolor="#ffffff00"
+     inkscape:zoom="1"
+     inkscape:cx="399.5"
+     inkscape:cy="400"
+     inkscape:window-width="1854"
+     inkscape:window-height="1011"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1" />
+  <path
+     id="path1"
+     style="fill:#000000;fill-opacity:1;stroke:none;stroke-opacity:1;stroke-width:1;stroke-dasharray:none"
+     d="M 0,1.5 A 1.5,1.5 0 0 1 1.5,0 h 13 A 1.5,1.5 0 0 1 16,1.5 v 13 A 1.5,1.5 0 0 1 14.5,16 H 1.5 A 1.5,1.5 0 0 1 0,14.5 Z M 1.2593714,0.87249519 A 0.3868762,0.3743762 0 0 0 0.87249519,1.2468714 V 3.8675048 H 3.9675048 V 0.87249519 Z M 4.9703064,4.7991795 H 0.98969359 V 10.510306 H 4.9703064 Z M 5.9419643,8.7180362 H 9.1180357 V 4.7819643 H 5.9419643 Z M 4.9716804,11.52832 H 0.96831971 v 3.06544 A 0.50042008,0.43792008 0 0 0 1.4687398,15.03168 H 4.9716804 Z M 6.0153651,9.7553651 V 14.964635 H 10.744634 V 9.7553651 Z M 11.778052,9.7180523 V 14.981948 H 14.63396 A 0.40798692,0.65798694 0 0 0 15.041948,14.32396 V 9.7180523 Z M 10.10816,8.7118397 h 4.96368 V 6.3481603 h -4.96368 z m 0.02594,-3.3459392 h 4.8718 V 1.5580746 A 0.60897512,0.54397512 0 0 0 14.396926,1.0140995 H 10.1341 Z M 9.0791136,3.7695669 V 1.0208864 H 4.9008864 v 2.7486805 z" />
+</svg>

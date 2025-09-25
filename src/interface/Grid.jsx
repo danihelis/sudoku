@@ -55,7 +55,7 @@ const GridCell = memo(({puzzle, pos, selected, highlight, state, onClick}) => {
 export function Grid({puzzle, cursor, highlight, state, onClick}) {
   const cells = [];
 
-  for (const [pos, cellState] of state.entries()) {
+  for (const [pos, cellState] of state.entries() ) {
     cells.push(
       <GridCell
         key={pos}

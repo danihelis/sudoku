@@ -322,24 +322,22 @@ export class Board {
     if (this.type == "irregular") {
       array.push(...this.layout.cell.map(cell => cell.rank));
     }
-
-    console.log(array);
-
     return DigitStream.encode(array);
   }
 
   static import(sequence) {
     let array = DigitStream.decode(sequence);
 
-    console.log(array);
-
-    let type = array[0] === 0 ? "standard" : array[0] === "diagonal" ? 1
+    let type = array[0] === 0 ? "standard" : array[0] === 1 ? "diagonal"
         : array[0] === 2 ? "irregular" : null;
     if (type === null) throw "invalid board type";
 
-    let board = new Board();
-    board.type = type;
-    if (type == "irregular") {
+    let board;
+    if (type !== "irregular") {
+      board = new Board(type);
+    } else {
+      board = new Board();
+      board.type = type;
       board.layout = new Layout(board);
       board.layout.load(array.slice(board.positions + 1));
     }
