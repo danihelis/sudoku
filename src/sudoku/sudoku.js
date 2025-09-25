@@ -1,6 +1,6 @@
 "use strict";
 
-function shuffle_array(array) {
+export function shuffle_array(array) {
   for (let i = 0; i < array.length - 1; i++) {
     let j = i + Math.floor(Math.random() * (array.length - i));
     if (i != j) {
@@ -12,7 +12,9 @@ function shuffle_array(array) {
   return array;
 }
 
-const choice_array = (array) => array[Math.floor(Math.random() * array.length)];
+export function choice_array(array) {
+  return array[Math.floor(Math.random() * array.length)];
+}
 
 function into_value(bit) {
   let value = 0;
@@ -23,7 +25,7 @@ function into_value(bit) {
   return value;
 }
 
-const into_bit = (value) => 1 << (value - 1);
+export const into_bit = (value) => 1 << (value - 1);
 
 const div = (a, b) => (a - a % b) / b;
 
@@ -66,7 +68,7 @@ class DigitStream {
 }
 
 
-class Cell {
+export class Cell {
 
   static DIAGONAL_1 = 0;
   static DIAGONAL_2 = 1;
@@ -106,7 +108,7 @@ class Cell {
   }
 }
 
-class Board {
+export class Board {
 
   rows;       // number of rows in the inner box
   columns;    // number of columns in the inner box
@@ -172,8 +174,8 @@ class Board {
       case "box":
         return this.layout.position[cell.rank][cell.index];
       case "diagonal":
-        return cell.index * this.dimension
-          + (rank === 0 ? index : dimension - index - 1);
+        return cell.index * this.dimension + (cell.rank === Cell.DIAGONAL_1
+            ? cell.index : this.dimension - cell.index - 1);
     }
     debugger;
     throw `invalid region: ${ cell.region }`;
@@ -194,9 +196,9 @@ class Board {
         let diagonal_1 = coord.rank === coord.index;
         let diagonal_2 = coord.rank === this.dimension - coord.index - 1;
         if (!diagonal_1 && !diagonal_2) return null;
-        return new Cell(main && second ? Cell.BOTH_DIAGONALS
+        return new Cell(diagonal_1 && diagonal_2 ? Cell.BOTH_DIAGONALS
             : diagonal_1 ? Cell.DIAGONAL_1 : Cell.DIAGONAL_2,
-            div(coord.rank, this.dimension), region);
+            coord.rank, region);
     }
     throw `invalid region: ${ cell.region }`;
   }
@@ -320,24 +322,22 @@ class Board {
     if (this.type == "irregular") {
       array.push(...this.layout.cell.map(cell => cell.rank));
     }
-
-    console.log(array);
-
     return DigitStream.encode(array);
   }
 
   static import(sequence) {
     let array = DigitStream.decode(sequence);
 
-    console.log(array);
-
-    let type = array[0] === 0 ? "standard" : array[0] === "diagonal" ? 1
+    let type = array[0] === 0 ? "standard" : array[0] === 1 ? "diagonal"
         : array[0] === 2 ? "irregular" : null;
     if (type === null) throw "invalid board type";
 
-    let board = new Board();
-    board.type = type;
-    if (type == "irregular") {
+    let board;
+    if (type !== "irregular") {
+      board = new Board(type);
+    } else {
+      board = new Board();
+      board.type = type;
       board.layout = new Layout(board);
       board.layout.load(array.slice(board.positions + 1));
     }
@@ -353,7 +353,7 @@ class Board {
     if (!value) return false;
     for (let region of this.regions) {
       let cell = this.into_cell(position, region);
-      for (let rank of cell.get_ranks() ?? []) {
+      for (let rank of cell?.get_ranks() ?? []) {
         for (let index = 0; index < this.dimension; index++) {
           if (index !== cell.index) {
             let pos = this.into_position(new Cell(rank, index, region));
@@ -369,7 +369,7 @@ class Board {
 }
 
 
-class Layout {
+export class Layout {
 
   static create_regular_layout(board) {
     let layout = new Layout(board);
@@ -552,7 +552,7 @@ class Layout {
 }
 
 
-class Solver {
+export class Solver {
 
   static SOLUTION_FOUND = 1;
   static SOLUTION_NOT_FOUND = -1;
@@ -866,7 +866,7 @@ class Solver {
 }
 
 
-class Creator {
+export class Creator {
 
   static ATTEMPTS_BEFORE_NEW_PUZZLE = 5;
   static MAXIMUM_ATTEMPTS = 50;
