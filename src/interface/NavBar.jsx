@@ -17,7 +17,7 @@ export function NavBar({hasPuzzle, onMenuClick}) {
       <img src={gridUrl} className="stroke-white" width="25" height="25" />
       <span className="font-bold ml-2 uppercase">Sudoku</span>
       <span className="flex-1" />
-      {hasPuzzle && (
+      {true && (
         <div className="flow-auto text-right">
           <Menu>
             <MenuButton className="cursor-pointer bg-gray-600 rounded-md p-2 px-3">

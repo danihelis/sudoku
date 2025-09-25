@@ -239,7 +239,7 @@ export function PuzzlePage({puzzle, onSolved, showSolution = false}) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-1 h-full justify-evenly">
+    <div className="flex flex-col items-center gap-1 h-full justify-evenly relative">
       <div className="flex flex-col gap-4 items-center">
         <div className="uppercase text-sm text-gray-500">
           <span className="">{puzzle.type}</span>
@@ -259,7 +259,7 @@ export function PuzzlePage({puzzle, onSolved, showSolution = false}) {
       {solved && showFireworks ? (
         <Fireworks
             options={{opacity: 0.5, flickering: 0}}
-            style={{top: 0, left: 0, width: '100%', height: '100%', position: 'absolute', background: 'rgb(0 0 0 / 0.3)'}}
+            style={{top: 0, left: 0, width: '100%', height: '100%', position: 'absolute', background: 'rgb(0 0 0 / 0)'}}
           />
       ) : null}
     </div>

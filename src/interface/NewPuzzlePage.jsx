@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { Creator, Board, Solver, Cell, into_bit, choice_array } from '../sudoku/sudoku.js';
 import { ChevronLeftIcon, ChevronRightIcon, PlayIcon } from '@heroicons/react/24/outline';
-import { PlayIcon as PlaySIcon } from '@heroicons/react/24/solid';
+import { Creator, Board, Solver, Cell, into_bit, choice_array } from '../sudoku/sudoku.js';
+
 import standardUrl from '../assets/standard.svg';
 import diagonalUrl from '../assets/diagonal.svg';
 import irregularUrl from '../assets/irregular.svg';
@@ -27,12 +27,13 @@ function Button({children, onClick, className}) {
 
 function RoundButton({className, ...props}) {
   return (
-    <Button className={`${className} rounded-full p-2 text-white`} {...props} />
+    <Button className={`${className} p-2 `} {...props} />
   );
 }
 
 
 function Selector({values, selected, setSelected}) {
+  const iconSize = "size-4";
 
   const change = (delta) => {
     let index = values.indexOf(selected);
@@ -41,13 +42,13 @@ function Selector({values, selected, setSelected}) {
   };
 
   return (
-    <div className="flex items-center justify-center gap-6 w-full">
-      <RoundButton key="<" onClick={() => change(-1)}>
-        <ChevronLeftIcon className="size-6" />
+    <div className="flex items-center justify-center gap-6 border-1 border-blue-300 rounded-xl p-1 w-full">
+      <RoundButton key="<" className="rounded-l-lg" onClick={() => change(-1)}>
+        <ChevronLeftIcon className={iconSize} />
       </RoundButton>
-      <span className="uppercase w-25 text-center text-lg">{selected}</span>
-      <RoundButton key=">" onClick={() => change(1)}>
-        <ChevronRightIcon className="size-6" />
+      <span className="flex-1 uppercase text-center text-slate-600">{selected}</span>
+      <RoundButton key=">" className="rounded-r-lg" onClick={() => change(1)}>
+        <ChevronRightIcon className={iconSize} />
       </RoundButton>
     </div>
   );
@@ -77,17 +78,17 @@ export function NewPuzzlePage({onCreatePuzzle}) {
       <span className="text-gray-500">Creating puzzle...</span>
     </div>
   ) : (
-    <div className="flex-1 flex flex-col items-center justify-evenly h-full">
-      <div className="flex items-center">
-        <p className="uppercase text-blue-800 text-2xl font-semibold">New Puzzle</p>
+    <div className="flex flex-col items-center justify-evenly h-full">
+      <div className="text-4xl text-black uppercase font-bold">
+        Sudoku
       </div>
-      <div className="flex flex-col gap-10 items-center justify-center">
-        <Selector key="difficulties" values={difficulties} selected={difficulty} setSelected={setDifficulty} />
+      <img src={urls[type]} width="100" />
+      <div className="flex flex-col gap-8 items-center justify-center w-2/3">
         <Selector key="types" values={types} selected={type} setSelected={setType} />
-        <img src={urls[type]} width="100" />
+        <Selector key="difficulties" values={difficulties} selected={difficulty} setSelected={setDifficulty} />
       </div>
       <div className="flex items-center">
-        <Button className="p-3 px-6 rounded flex gap-2 text-black items-center" onClick={create}>
+        <Button className="p-3 px-6 rounded-lg flex gap-2 text-black items-center" onClick={create}>
           <PlayIcon className="size-6" />
           <span className="text-xl uppercase font-light">Play</span>
         </Button>

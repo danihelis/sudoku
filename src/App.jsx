@@ -4,6 +4,7 @@ import { Transition } from '@headlessui/react';
 import { PuzzlePage } from './interface/PuzzlePage.jsx';
 import { NewPuzzlePage } from './interface/NewPuzzlePage.jsx';
 import { NavBar } from './interface/NavBar.jsx';
+import { Footer } from './interface/Footer.jsx';
 import { Board, Solver } from './sudoku/sudoku.js';
 
 
@@ -65,23 +66,26 @@ export default function App() {
   };
 
   return (
-    <div className="flex flex-col h-dvh items-stretch">
-      <NavBar hasPuzzle={!!puzzle} onMenuClick={handleMenuClick} />
-      <div className="flex-1 relative">
-        {!puzzle && (
+    <div className="h-dvh flex flex-col relative items-center">
+      {puzzle ? (
+        <>
+          <NavBar onMenuClick={handleMenuClick} />
+          <div className="flex-1 h-full max-w-sm">
+            <PuzzlePage puzzle={puzzle} showSolution={showSolution} />
+          </div>
+        </>
+      ) : (
+        <div className="h-full w-full max-w-sm">
           <Transition show={error}>
-            <div className="absolute top-2 right-2 p-2 px-4 bg-red-200 text-red-800 text-sm flex gap-2 items-center justify-center transition data-closed:opacity-0 duration-500">
-              <ExclamationTriangleIcon className="size-4" />
+            <div className="absolute top-0 left-0 m-2 p-2 px-4 rounded bg-red-200 text-red-800 text-sm flex gap-2 items-center justify-center transition data-closed:opacity-0 duration-500">
+              <ExclamationTriangleIcon className="size-5" />
               <span>The puzzle URL is invalid</span>
             </div>
           </Transition>
-        )}
-        {puzzle ? (
-          <PuzzlePage puzzle={puzzle} showSolution={showSolution} />
-        ) : (
           <NewPuzzlePage onCreatePuzzle={handleCreatePuzzle} />
-        )}
-      </div>
+        </div>
+      )}
+      <Footer />
     </div>
   );
 }
